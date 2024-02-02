@@ -1,25 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function Question({ question, onAnswered }) {
   const [timeRemaining, setTimeRemaining] = useState(10);
 
-  // add useEffect code
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTimeRemaining(prevTime => prevTime - 1);
+    }, 1000);
 
-  function handleAnswer(isCorrect) {
+    return () => clearTimeout(timer);
+  }, [timeRemaining]);
+
+  useEffect(() => {
+    if (timeRemaining === 0) {
+      setTimeRemaining(10);
+      onAnswered(false);
+    }
+  }, [timeRemaining, onAnswered]);
+
+  function handleAnswer(isTrue) {
     setTimeRemaining(10);
-    onAnswered(isCorrect);
+    onAnswering(isTrue);
   }
 
-  const { id, prompt, answers, correctIndex } = question;
+  const { id, prompt, answers, correctTimer} = question;
 
   return (
     <>
       <h1>Question {id}</h1>
       <h3>{prompt}</h3>
-      {answers.map((answer, index) => {
-        const isCorrect = index === correctIndex;
+      {answers.map((answer, timer) => {
+        const isTrue = timer === correctTimer;
         return (
-          <button key={answer} onClick={() => handleAnswer(isCorrect)}>
+          <button key={answer} onClick={() => handleAnswer(isTrue)}>
             {answer}
           </button>
         );
